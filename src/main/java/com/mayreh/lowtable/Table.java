@@ -11,7 +11,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Objects;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -66,12 +65,20 @@ public class Table extends JComponent {
                 cell.styleConfigurer().accept(styler);
 
                 final Color background;
-                background = Objects.requireNonNullElseGet(styler.background, tableStyle::background);
+                if (styler.background != null) {
+                    background = styler.background;
+                } else {
+                    background = tableStyle.background();
+                }
                 g.setColor(background);
                 g.fillRect(colIdx * columnWidth, rowIdx * rowHeight, columnWidth, rowHeight);
 
                 final Color foreground;
-                foreground = Objects.requireNonNullElseGet(styler.foreground, tableStyle::foreground);
+                if (styler.foreground != null) {
+                    foreground = styler.foreground;
+                } else {
+                    foreground = tableStyle.foreground();
+                }
 
                 Font font = cellFont(styler);
                 FontMetrics fontMetrics = g.getFontMetrics(font);
