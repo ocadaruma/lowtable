@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Optional;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -26,7 +27,7 @@ import javax.swing.JFrame;
 import com.mayreh.lowtable.TableData.Cell;
 import com.mayreh.lowtable.TableData.Row;
 import com.mayreh.lowtable.TableStyle.Defaults;
-import com.mayreh.lowtable.TableStyle.TableCellStyler;
+import com.mayreh.lowtable.TableStyle.TableCellStyle;
 
 import lombok.RequiredArgsConstructor;
 
@@ -61,26 +62,16 @@ public class Table extends JComponent {
             Row row = tableData.rows().get(rowIdx);
             for (int colIdx = 0; colIdx < columnCount; colIdx++) {
                 Cell cell = row.columns().get(colIdx);
-                TableCellStyler styler = new TableCellStyler();
-                cell.styleConfigurer().accept(styler);
 
-                final Color background;
-                if (styler.background != null) {
-                    background = styler.background;
-                } else {
-                    background = tableStyle.background();
-                }
+                Color background = Optional.ofNullable(cell.style().background())
+                                           .orElse(tableStyle.background());
                 g.setColor(background);
                 g.fillRect(colIdx * columnWidth, rowIdx * rowHeight, columnWidth, rowHeight);
 
-                final Color foreground;
-                if (styler.foreground != null) {
-                    foreground = styler.foreground;
-                } else {
-                    foreground = tableStyle.foreground();
-                }
+                Color foreground = Optional.ofNullable(cell.style().foreground())
+                                           .orElse(tableStyle.foreground());
 
-                Font font = cellFont(styler);
+                Font font = cellFont(cell.style());
                 FontMetrics fontMetrics = g.getFontMetrics(font);
                 g.setFont(font);
                 g.setColor(foreground);
@@ -124,9 +115,7 @@ public class Table extends JComponent {
 
         for (Row row : tableData.rows()) {
             for (Cell cell : row.columns()) {
-                TableCellStyler styler = new TableCellStyler();
-                cell.styleConfigurer().accept(styler);
-                Font font = cellFont(styler);
+                Font font = cellFont(cell.style());
                 FontMetrics fontMetrics = getFontMetrics(font);
 
                 maxTextWidth = Math.max(maxTextWidth, fontMetrics.stringWidth(cell.value()));
@@ -142,18 +131,15 @@ public class Table extends JComponent {
         setSize(new Dimension(requiredWidth, requiredHeight));
     }
 
-    private Font cellFont(TableCellStyler styler) {
+    private Font cellFont(TableCellStyle style) {
+        TableFont.TableFontBuilder builder = TableFont.builder();
         TableFont font = tableStyle.font();
-        if (styler.fontName != null) {
-            font = font.withFontName(styler.fontName);
-        }
-        if (styler.fontStyle != null) {
-            font = font.withStyle(styler.fontStyle);
-        }
-        if (styler.fontSize != null) {
-            font = font.withStyle(styler.fontSize);
-        }
-        return font.jfont();
+
+        builder.fontName(Optional.ofNullable(style.fontName()).orElse(font.fontName()));
+        builder.style(Optional.ofNullable(style.fontStyle()).orElse(font.style()));
+        builder.size(Optional.ofNullable(style.fontSize()).orElse(font.size()));
+
+        return builder.build().jfont();
     }
 
     /**
@@ -165,11 +151,11 @@ public class Table extends JComponent {
                 .builder()
                 .header("target", "metricA", "metricB")
                 .addRow(Cell.of("foo"),
-                        Cell.of("99.9999", styler -> styler.background(Defaults.SUCCESS_LIGHT)),
-                        Cell.of("0.1", styler -> styler.background(Defaults.DANGER_LIGHT)))
+                        Cell.of("99.9999", TableCellStyle.builder().background(Defaults.SUCCESS_LIGHT).build()),
+                        Cell.of("0.1", TableCellStyle.builder().background(Defaults.DANGER_LIGHT).build()))
                 .addRow(Cell.of("bar"),
-                        Cell.of("1300000", styler -> styler.background(Defaults.SUCCESS_LIGHT)),
-                        Cell.of("99", styler -> styler.background(Defaults.SUCCESS_LIGHT)))
+                        Cell.of("1300000", TableCellStyle.builder().background(Defaults.SUCCESS_LIGHT).build()),
+                        Cell.of("99", TableCellStyle.builder().background(Defaults.SUCCESS_LIGHT).build()))
                 .build();
 
         Table table = new Table(TableStyle.DEFAULT, data);

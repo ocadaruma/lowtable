@@ -50,11 +50,15 @@ public class TableStyle {
     /**
      * Contains style overrides.
      *
-     * Non-null field means we override specific fill from table's style.
+     * Non-null field means we override it from table's style.
      * Otherwise, table's style will be used.
      */
-    @Setter
-    public static class TableCellStyler {
+    @Value
+    @Accessors(fluent = true)
+    @Builder(toBuilder = true)
+    public static class TableCellStyle {
+        public static final TableCellStyle NONE = builder().build();
+
         String fontName;
 
         Integer fontStyle;

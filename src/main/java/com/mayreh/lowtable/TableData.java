@@ -5,9 +5,8 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
-import com.mayreh.lowtable.TableStyle.TableCellStyler;
+import com.mayreh.lowtable.TableStyle.TableCellStyle;
 
 import lombok.NonNull;
 import lombok.Value;
@@ -22,14 +21,14 @@ public class TableData {
         String value;
 
         @NonNull
-        Consumer<TableCellStyler> styleConfigurer;
+        TableCellStyle style;
 
         public static Cell of(String value) {
-            return new Cell(value, ignore -> {});
+            return new Cell(value, TableCellStyle.NONE);
         }
 
-        public static Cell of(String value, Consumer<TableCellStyler> styleConfigurer) {
-            return new Cell(value, styleConfigurer);
+        public static Cell of(String value, TableCellStyle style) {
+            return new Cell(value, style);
         }
     }
 

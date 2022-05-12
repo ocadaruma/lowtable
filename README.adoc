@@ -15,11 +15,11 @@ TableData data = TableData
         .builder()
         .header("target", "metricA", "metricB")
         .addRow(Cell.of("foo"),
-                Cell.of("99.9999", styler -> styler.background(Defaults.SUCCESS_LIGHT)),
-                Cell.of("0.1", styler -> styler.background(Defaults.DANGER_LIGHT)))
+                Cell.of("99.9999", TableCellStyle.builder().background(Defaults.SUCCESS_LIGHT).build()),
+                Cell.of("0.1", TableCellStyle.builder().background(Defaults.DANGER_LIGHT).build()))
         .addRow(Cell.of("bar"),
-                Cell.of("1300000", styler -> styler.background(Defaults.SUCCESS_LIGHT)),
-                Cell.of("99", styler -> styler.background(Defaults.SUCCESS_LIGHT)))
+                Cell.of("1300000", TableCellStyle.builder().background(Defaults.SUCCESS_LIGHT).build()),
+                Cell.of("99", TableCellStyle.builder().background(Defaults.SUCCESS_LIGHT).build()))
         .build();
 
 Table table = new Table(TableStyle.DEFAULT, data);
