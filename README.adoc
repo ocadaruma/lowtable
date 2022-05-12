@@ -4,6 +4,9 @@ Super simple swing component to render tables.
 
 image::img/example.png["Example",300]
 
+== Installation
+Add `com.mayreh.lowtable:lowtable:$VERSION` to the dependency.
+
 == Usage
 
 [source,java]
